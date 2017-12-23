@@ -3,7 +3,7 @@ module Indicate
     attr_accessor :calculator, :verbose
     
     def initialize(verbose: true)
-      self.calculator   =   ::Trading::Calculations.new
+      self.calculator   =   ::Indicate::Calculations.new
       self.verbose      =   verbose
     end
     
@@ -124,7 +124,7 @@ module Indicate
     def macd(data, fast_period: 12, slow_period: 26, signal_period: 9)
       macd          =   self.calculator.macd(data, fast_period: fast_period, slow_period: slow_period, signal_period: signal_period, return_all: false)
       
-      return ::Trading::Calculations::INVALID_DATA_ERROR if macd.nil? || macd[:raw].nil? || macd[:signal].nil?
+      return ::Indicate::Calculations::INVALID_DATA_ERROR if macd.nil? || macd[:raw].nil? || macd[:signal].nil?
       
       raw           =   macd[:raw]
       signal        =   macd[:signal]
@@ -137,7 +137,7 @@ module Indicate
     def macd_ext(data, fast_period: 12, fast_ma: :sma, slow_period: 26, slow_ma: :sma, signal_period: 9, signal_ma: :sma)
       macd_ext      =   self.calculator.macd_ext(data, fast_period: fast_period, fast_ma: fast_ma, slow_period: slow_period, slow_ma: slow_ma, signal_period: signal_period, signal_ma: signal_ma, return_all: false)
       
-      return ::Trading::Calculations::INVALID_DATA_ERROR if macd_ext.nil? || macd_ext[:raw].nil? || macd_ext[:signal].nil?
+      return ::Indicate::Calculations::INVALID_DATA_ERROR if macd_ext.nil? || macd_ext[:raw].nil? || macd_ext[:signal].nil?
       
       raw           =   macd_ext[:raw]
       signal        =   macd_ext[:signal]
