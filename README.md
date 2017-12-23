@@ -4,11 +4,15 @@ Technical Analysis signals & indicators for trading stocks, bonds, currencies, c
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add the following to your application's Gemfile:
 
 ```ruby
+gem 'talib_ruby', github: 'edbond/talib-ruby'
+gem 'ta-indicator', '~> 0.1.1'
 gem 'indicate', github: 'SebastianJ/indicate'
 ```
+
+(Since talib_ruby hasn't been updated in a while on RubyGems, this gem uses a forked version hosted on Github.)
 
 And then execute:
 
@@ -20,14 +24,7 @@ Or install it yourself as:
 
 ## Usage
 
-Since talib_ruby hasn't been updated in a while on RubyGems, this gem uses a forked version hosted on Github.
-
-Because of this, you'll need to add the following to your app's Gemfile:
-
-```ruby
-gem 'talib_ruby', github: 'edbond/talib-ruby'
-gem 'ta-indicator', '~> 0.1.1'
-```
+TODO
 
 ## Development
 
