@@ -1,0 +1,45 @@
+GIT
+  remote: https://github.com/edbond/talib-ruby
+  revision: 10844ab955c1e0e72cf708c88c6f95be03ecd19b
+  specs:
+    talib_ruby (1.0.6)
+
+PATH
+  remote: .
+  specs:
+    indicate (0.1.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    diff-lcs (1.3)
+    rake (10.5.0)
+    rspec (3.7.0)
+      rspec-core (~> 3.7.0)
+      rspec-expectations (~> 3.7.0)
+      rspec-mocks (~> 3.7.0)
+    rspec-core (3.7.0)
+      rspec-support (~> 3.7.0)
+    rspec-expectations (3.7.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.7.0)
+    rspec-mocks (3.7.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.7.0)
+    rspec-support (3.7.0)
+    ta-indicator (0.1.1)
+      talib_ruby
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bundler (~> 1.16.a)
+  indicate!
+  rake (~> 10.0)
+  rspec (~> 3.0)
+  ta-indicator (~> 0.1.1)
+  talib_ruby!
+
+BUNDLED WITH
+   1.16.1.pre1
