@@ -7,7 +7,7 @@ Technical Analysis signals & indicators for trading stocks, bonds, currencies, c
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'indicate'
+gem 'indicate', github: 'SebastianJ/indicate'
 ```
 
 And then execute:
