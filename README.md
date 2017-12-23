@@ -20,7 +20,14 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Since talib_ruby hasn't been updated in a while on RubyGems, this gem uses a forked version hosted on Github.
+
+Because of this, you'll need to add the following to your app's Gemfile:
+
+```ruby
+gem 'talib_ruby', github: 'edbond/talib-ruby'
+gem 'ta-indicator', '~> 0.1.1'
+```
 
 ## Development
 
