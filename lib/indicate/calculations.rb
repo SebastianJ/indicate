@@ -63,9 +63,24 @@ module Indicate
     # it indicates that the current trend is possibly losing steam.
     #
     def adx(data, time_period: 14, return_all: false)
-      values      =   Adx.new(time_period: period).run(data[:high], data[:low], data[:close])
+      # ADX seems to require at least a dataset of 2x the time period
+      return INVALID_DATA_ERROR if !valid_parameters(data: data, keys: [:high, :low, :close], required_size: time_period * 2)
+
+      values      =   Adx.new(time_period: time_period).run(data[:high], data[:low], data[:close])
       
-      return return_all ? values : values&.last&.round(0)&.to_i
+      return return_all ? values : values&.last
+    end
+    
+    def minus_di(data, time_period: 14, return_all: false)
+      values      =   MinusDI.new(time_period: time_period).run(data[:high], data[:low], data[:close])
+      
+      return return_all ? values : values&.last
+    end
+    
+    def plus_di(data, time_period: 14, return_all: false)
+      values      =   PlusDI.new(time_period: time_period).run(data[:high], data[:low], data[:close])
+      
+      return return_all ? values : values&.last
     end
     
     # This algorithm uses the talib Bollinger Bands function to determine entry entry
@@ -292,24 +307,6 @@ module Indicate
     #   Chande Momentum Oscillator 
     def aroon_osc(data, time_period: 14, return_all: false)
       values        =   AroonOsc.new(time_period: time_period).run(data[:high], data[:low])
-      
-      return return_all ? values : values&.last&.round(0)&.to_i
-    end
-    
-    #
-    #          Average Directional Movement Index
-    #
-    #      TODO, this one needs more research for the returns
-    #      http://www.investopedia.com/terms/a/adx.asp
-    #
-    # The ADX calculates the potential strength of a trend.
-    # It fluctuates from 0 to 100, with readings below 20 indicating a weak trend and readings above 50 signaling a strong trend.
-    # ADX can be used as confirmation whether the pair could possibly continue in its current trend or not.
-    # ADX can also be used to determine when one should close a trade early. For instance, when ADX starts to slide below 50,
-    # it indicates that the current trend is possibly losing steam.
-    #
-    def adx(data, period: 14, return_all: false)
-      values        =   Adx.new(time_period: period).run(data[:high], data[:low], data[:close])
       
       return return_all ? values : values&.last&.round(0)&.to_i
     end

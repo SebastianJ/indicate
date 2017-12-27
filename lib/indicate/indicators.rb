@@ -48,27 +48,40 @@ module Indicate
     end
     
     #
-    #          Average Directional Movement Index
+    # Average Directional Movement Index
     #
-    #      TODO, this one needs more research for the returns
-    #      http://www.investopedia.com/terms/a/adx.asp
+    # http://www.investopedia.com/terms/a/adx.asp
     #
-    # The ADX calculates the potential strength of a trend.
-    # It fluctuates from 0 to 100, with readings below 20 indicating a weak trend and readings above 50 signaling a strong trend.
-    # ADX can be used as confirmation whether the pair could possibly continue in its current trend or not.
-    # ADX can also be used to determine when one should close a trade early. For instance, when ADX starts to slide below 50,
-    # it indicates that the current trend is possibly losing steam.
-    #
-    def adx(data, time_period: 14, strong: 50, weak: 20)
+    # A strong trend is occurring when the ADX is over 25
+    # A weak trend is occurring when the ADX falls below 20.
+    def adx(data, time_period: 14, weak: 20, strong: 25)
       adx       =   self.calculator.adx(data, time_period: time_period)
       
       if adx > strong
-        return -1 # Overbought
+        return 1 # Strong trend
       elsif adx < weak
-        return 1 # Oversold
+        return -1 # Weak trend
       else
         return 0
       end
+    end
+    
+    def wilder_dmi(data, time_period: 14, weak: 20, strong: 25)
+      adx       =   self.calculator.adx(data, time_period: time_period)
+      plus_di   =   self.calculator.plus_di(data, time_period: time_period)
+      minus_di  =   self.calculator.minus_di(data, time_period: time_period)
+      
+      puts "[Trading::Indicators#wilder_dmi(time_period: #{time_period})] - adx: #{adx}, plus DI: #{plus_di}, minus DI: #{minus_di}." if verbose?
+      
+      if !adx.nil? && !plus_di.nil? && !minus_di.nil?
+        if adx > weak && plus_di > minus_di
+          return 1
+        elsif adx > strong && plus_di < minus_di
+          return -1
+        end
+      end
+      
+      return 0
     end
     
     # This algorithm uses the talib Bollinger Bands function to determine entry entry
@@ -164,21 +177,35 @@ module Indicate
     # RSI can also be used to confirm trend formations. If you think a trend is forming, wait for
     # RSI to go above or below 50 (depending on if you’re looking at an uptrend or downtrend) before you enter a trade.
     #
-    def rsi(data, time_period: 14, low: 40, high: 70)
-      rsi         =   self.calculator.rsi(data, time_period: time_period, return_all: true)
+    def rsi(data, time_period: 14, low: 30, high: 70, compare_with_previous: true)
+      rsi             =   self.calculator.rsi(data, time_period: time_period, return_all: true)
       
       if !rsi.nil? && rsi.any?
-        current   =   rsi.pop&.round(0)&.to_i
-        previous  =   rsi.pop&.round(0)&.to_i
+        current       =   rsi.pop&.round(0)&.to_i
         
-        if !previous.nil? && !current.nil?
-          puts "[Trading::Indicators#rsi(time_period: #{time_period}, low: #{low}, high: #{high})] - current: #{current}, previous: #{previous}" if verbose?
+        if !current.nil?
+          if compare_with_previous
+            previous  =   rsi.pop&.round(0)&.to_i
+            
+            puts "[Trading::Indicators#rsi(time_period: #{time_period}, low: #{low}, high: #{high})] - current: #{current}, previous: #{previous}" if verbose?
           
-          if previous < high && current > high
-            return -1 # sell/short
-          elsif previous > low && current < low
-            return 1 # buy/long
+            if !previous.nil? && previous < high && current > high
+              return -1 # sell/short
+            elsif !previous.nil? && previous > low && current < low
+              return 1 # buy/long
+            end
           end
+          
+          if !compare_with_previous
+            puts "[Trading::Indicators#rsi(time_period: #{time_period}, low: #{low}, high: #{high})] - current: #{current}" if verbose?
+            
+            if current > high
+              return -1 # sell/short
+            elsif current < low
+              return 1 # buy/long
+            end
+          end
+
         end
       end
       
@@ -308,13 +335,15 @@ module Indicate
       #  if the last three SAR points are above the candle (high) then it is a sell signal
       #  if the last three SAE points are below the candle (low) then is a buy signal
       #
-      if current > last_high && prior > last_high && earlier > last_high
-        return -1 # sell
-      elsif current < last_low && prior < last_low && earlier < last_low
-        return 1 # buy
-      else
-        return 0
+      if !current.nil? && !prior.nil? && !earlier.nil? && !last_high.nil? && !last_low.nil?
+        if current > last_high && prior > last_high && earlier > last_high
+          return -1 # sell
+        elsif current < last_low && prior < last_low && earlier < last_low
+          return 1 # buy
+        end
       end
+      
+      return 0
     end
     
     #
@@ -402,30 +431,6 @@ module Indicate
       if aroonosc < low
         return -1 # overbought -> sell/short
       elsif aroonosc > high
-        return 1 # oversold -> buy/long
-      else
-        return 0 # hold
-      end
-    end
-    
-    #
-    #          Average Directional Movement Index
-    #
-    #      TODO, this one needs more research for the returns
-    #      http://www.investopedia.com/terms/a/adx.asp
-    #
-    # The ADX calculates the potential strength of a trend.
-    # It fluctuates from 0 to 100, with readings below 20 indicating a weak trend and readings above 50 signaling a strong trend.
-    # ADX can be used as confirmation whether the pair could possibly continue in its current trend or not.
-    # ADX can also be used to determine when one should close a trade early. For instance, when ADX starts to slide below 50,
-    # it indicates that the current trend is possibly losing steam.
-    #
-    def adx(data, time_period: 14, low: 20, high: 50)
-      adx      =   self.calculator.adx(data, time_period: time_period, return_all: false)
-      
-      if adx > high
-        return -1 # overbought -> sell/short
-      elsif adx < low
         return 1 # oversold -> buy/long
       else
         return 0 # hold
