@@ -187,12 +187,14 @@ module Indicate
           if compare_with_previous
             previous  =   rsi.pop&.round(0)&.to_i
             
-            puts "[Trading::Indicators#rsi(time_period: #{time_period}, low: #{low}, high: #{high})] - current: #{current}, previous: #{previous}" if verbose?
+            if !previous.nil?
+              puts "[Trading::Indicators#rsi(time_period: #{time_period}, low: #{low}, high: #{high})] - current: #{current}, previous: #{previous}" if verbose?
           
-            if !previous.nil? && previous < high && current > high
-              return -1 # sell/short
-            elsif !previous.nil? && previous > low && current < low
-              return 1 # buy/long
+              if previous < high && current > high
+                return -1 # sell/short
+              elsif previous > low && current < low
+                return 1 # buy/long
+              end
             end
           end
           
@@ -324,9 +326,9 @@ module Indicate
     #
     def parabolic_sar(data, acceleration_factor: 0.02, maximum: 0.02)
       sars          =   self.calculator.parabolic_sar(data, acceleration_factor: acceleration_factor, maximum: maximum, return_all: true)
-      current       =   sars.pop
-      prior         =   sars.pop
-      earlier       =   sars.pop
+      current_sar   =   sars.pop
+      prior_sar     =   sars.pop
+      earlier_sar   =   sars.pop
       
       last_high     =   data[:high].last
       last_low      =   data[:low].last
@@ -335,10 +337,10 @@ module Indicate
       #  if the last three SAR points are above the candle (high) then it is a sell signal
       #  if the last three SAE points are below the candle (low) then is a buy signal
       #
-      if !current.nil? && !prior.nil? && !earlier.nil? && !last_high.nil? && !last_low.nil?
-        if current > last_high && prior > last_high && earlier > last_high
+      if !current_sar.nil? && !prior_sar.nil? && !earlier_sar.nil? && !last_high.nil? && !last_low.nil?
+        if current_sar > last_high && prior_sar > last_high && earlier_sar > last_high
           return -1 # sell
-        elsif current < last_low && prior < last_low && earlier < last_low
+        elsif current_sar < last_low && prior_sar < last_low && earlier_sar < last_low
           return 1 # buy
         end
       end

@@ -45,7 +45,7 @@ module Indicate
     # This algorithm uses ATR as a momentum strategy, but the same signal can be used for
     # a reversion strategy, since ATR doesn't indicate the price direction (like adx below)
     #
-    def atr(data, time_period: 14)
+    def atr(data, time_period: 14, return_all: false)
       return INVALID_DATA_ERROR if !valid_parameters(data: data, keys: [:high, :low, :close], required_size: time_period)
       return Atr.new(time_period: time_period).run(data[:high], data[:low], data[:close])
     end
